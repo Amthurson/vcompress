@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+// import Image from "next/image";
 import TypingAnimation from "@/components/ui/typing-animation";
 import { useState, useEffect } from "react";
 import { compressImage, compressVideo } from "./compress";

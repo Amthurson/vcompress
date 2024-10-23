@@ -1,5 +1,5 @@
 // Worker 文件代码（compressWorker.js）
-import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+// import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 
 const compressVideoWorker = (inputFile) => {
   return new Promise((resolve, reject) => {
