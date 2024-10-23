@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { ArrowRightIcon } from "@radix-ui/react-icons";
+// import { ArrowRightIcon } from "@radix-ui/react-icons";
 
 import { cn } from "@/lib/utils";
 // import { Button } from "@/components/ui/button";
@@ -29,8 +29,8 @@ const BentoCard = ({
   background,
   Icon,
   description,
-  href,
-  cta,
+  // href,
+  // cta,
 }: {
   name: string;
   className: string;

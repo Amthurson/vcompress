@@ -62,16 +62,11 @@ export async function compressVideo(file, onProgress) {
         '-i', fileName,
         '-c:v', 'libx264',
         '-preset', 'ultrafast',
-        '-crf', '23',
-        // '-vf', 'scale=-2:360',
+        '-crf', '35',
+        '-vf', 'scale=-2:480',
         '-c:a', 'aac',
-        // '-b:a', '128k',
-        // '-an',
-        // '-acodec', 'aac',
-        // '-b:a', '128k',
+        '-b:a', '128k',
         '-movflags', '+faststart',
-        // '-t', '5',
-        // '-threads', '16',
         'output.mp4'
       ]);
     
@@ -90,11 +85,3 @@ export async function compressVideo(file, onProgress) {
     }
   }
 
-// 添加错误处理函数
-function handleCompressionError(error) {
-  console.error('压缩过程中发生错误:', error);
-  // 这里可以添加更多的错误处理逻辑，比如显示错误消息给用户
-  throw new Error('压缩失败：' + error.message);
-}
-
-// 其他注释掉的代码保持不变
