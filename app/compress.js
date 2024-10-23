@@ -41,7 +41,7 @@ export async function compressVideo(file, onProgress) {
         ffmpeg = new FFmpeg();
         ffmpeg.on('progress', (progressState) => {
           if (onProgress) {
-            const { progress, time } = progressState
+            const { progress } = progressState
             onProgress(Math.min(progress * 100, 100));
           }
         });

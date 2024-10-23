@@ -1,6 +1,6 @@
 "use client";
 
-// import Image from "next/image";
+import Image from "next/image";
 import TypingAnimation from "@/components/ui/typing-animation";
 import { useState, useEffect } from "react";
 import { compressImage, compressVideo } from "./compress";
@@ -164,11 +164,11 @@ export default function Home() {
           <div className="mt-4 w-full flex justify-center gap-4 flex-wrap">
             <div className="flex flex-col items-center">
               <p className="mb-2">原始图片</p>
-              <img src={originalImageUrl} alt="原始图片" className="max-h-[60vh] object-contain" />
+              <Image src={originalImageUrl} alt="原始图片" className="max-h-[60vh] object-contain" />
             </div>
             <div className="flex flex-col items-center">
               <p className="mb-2">压缩后图片</p>
-              <img src={compressedImageUrl} alt="压缩后的图片" className="max-h-[60vh] object-contain" />
+              <Image src={compressedImageUrl} alt="压缩后的图片" className="max-h-[60vh] object-contain" />
             </div>
           </div>
         )}
