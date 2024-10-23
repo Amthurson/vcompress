@@ -3,11 +3,11 @@ const nextConfig = {
   // 根据环境变量决定是否使用静态导出
   output: process.env.NODE_ENV === 'production' ? 'export' : undefined,
   
-  // 如果您的项目不是部署在域名根目录,还需要设置 basePath
-  basePath: '/your-base-path',
+  // 如果您的项目不是部署在子目录，请移除或注释掉这行
+  // basePath: '/your-base-path',
 
-  // 如果您需要将输出目录更改为 'out',可以添加以下配置
-  distDir: 'out',
+  // 这行可以移除，因为 'out' 是默认值
+  // distDir: 'out',
 };
 
 export default nextConfig;
