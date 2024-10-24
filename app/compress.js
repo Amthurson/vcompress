@@ -16,11 +16,12 @@ export async function compressImage(file, options = {}) {
     maxWidthOrHeight: 1280,
     useWebWorker: true,
     initialQuality: 0.7,
-    ...options,
   };
 
+  const compressOptions = { ...defaultOptions, ...options };
+
   try {
-    const compressedFile = await imageCompression(file, defaultOptions);
+    const compressedFile = await imageCompression(file, compressOptions);
     return compressedFile;
   } catch (error) {
     console.error('图片压缩失败:', error);
@@ -34,9 +35,10 @@ let ffmpeg = null;
  * 压缩视频文件
  * @param {File} file - 需要压缩的视频文件
  * @param {Function} onProgress - 进度回调函数
+ * @param {Object} options - 压缩选项参数
  * @returns {Promise<Blob>} - 压缩后的二进制视频 Blob
  */
-export async function compressVideo(file, onProgress) {
+export async function compressVideo(file, onProgress, options = {}) {
     if (!ffmpeg) {
       try {
         ffmpeg = new FFmpeg();
@@ -55,6 +57,15 @@ export async function compressVideo(file, onProgress) {
       }
     }
   
+    const defaultOptions = {
+      preset: 'ultrafast',
+      crf: '35',
+      scale: '-2:1280',
+      audioBitrate: '128k'
+    };
+
+    const compressOptions = { ...defaultOptions, ...options };
+
     try {
       const fileName = file.name;
       await ffmpeg.writeFile(fileName, await fetchFile(file));
@@ -62,11 +73,11 @@ export async function compressVideo(file, onProgress) {
       await ffmpeg.exec([
         '-i', fileName,
         '-c:v', 'libx264',
-        '-preset', 'ultrafast',
-        '-crf', '35',
-        '-vf', 'scale=-2:1280',
+        '-preset', compressOptions.preset,
+        '-crf', compressOptions.crf,
+        '-vf', `scale=${compressOptions.scale}`,
         '-c:a', 'aac',
-        '-b:a', '128k',
+        '-b:a', compressOptions.audioBitrate,
         '-movflags', '+faststart',
         'output.mp4'
       ]);
