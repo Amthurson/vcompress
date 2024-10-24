@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+// import Image from "next/image";
 import TypingAnimation from "@/components/ui/typing-animation";
 import { useState, useEffect } from "react";
 import { compressImage, compressVideo } from "./compress";
@@ -17,7 +17,6 @@ export default function Home() {
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
 
   useEffect(() => {
-    // 清理函数
     return () => {
       if (originalImageUrl) URL.revokeObjectURL(originalImageUrl);
       if (compressedImageUrl) URL.revokeObjectURL(compressedImageUrl);
@@ -56,22 +55,23 @@ export default function Home() {
         if (file.type.startsWith('image/')) {
           setLoading(true);
           setActiveTab('image');
-          setOriginalImageUrl(URL.createObjectURL(file));
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            setOriginalImageUrl(e.target?.result as string);
+          };
+          reader.readAsDataURL(file);
           const compressed = await compressImage(file, {
             onProgress: (progress: number) => setCompressionProgress(progress),
           });
-          console.log(compressed.size);
-          
           setCompressedFile(compressed);
-          setCompressedImageUrl(URL.createObjectURL(compressed));
+          const compressedUrl = URL.createObjectURL(compressed);
+          setCompressedImageUrl(compressedUrl);
         } else if (file.type.startsWith('video/')) {
           setActiveTab('video');
-          console.log(file);
           const compressed = await compressVideo(file, onProgress);
           const compressedVideoUrl = URL.createObjectURL(compressed);
           setCompressedFile(new File([compressed], file.name, { type: 'video/mp4' }));
           setCompressedImageUrl(compressedVideoUrl);
-          console.log('压缩后的视频URL:', compressedVideoUrl);
         }
       } catch (error) {
         console.error('压缩失败:', error);
@@ -164,11 +164,11 @@ export default function Home() {
           <div className="mt-4 w-full flex justify-center gap-4 flex-wrap">
             <div className="flex flex-col items-center">
               <p className="mb-2">原始图片</p>
-              <Image src={originalImageUrl} alt="原始图片" className="max-h-[60vh] object-contain" />
+              <img src={originalImageUrl} alt="原始图片" className="max-h-[60vh] object-contain" />
             </div>
             <div className="flex flex-col items-center">
               <p className="mb-2">压缩后图片</p>
-              <Image src={compressedImageUrl} alt="压缩后的图片" className="max-h-[60vh] object-contain" />
+              <img src={compressedImageUrl} alt="压缩后的图片" className="max-h-[60vh] object-contain" />
             </div>
           </div>
         )}

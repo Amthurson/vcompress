@@ -11,7 +11,8 @@ import { fetchFile } from '@ffmpeg/util'
  */
 export async function compressImage(file, options = {}) {
   const defaultOptions = {
-    maxSizeMB: 0.5,
+    maxSizeMB: 2,
+    minSizeMB: 1,
     maxWidthOrHeight: 1280,
     useWebWorker: true,
     initialQuality: 0.7,
@@ -63,7 +64,7 @@ export async function compressVideo(file, onProgress) {
         '-c:v', 'libx264',
         '-preset', 'ultrafast',
         '-crf', '35',
-        '-vf', 'scale=-2:480',
+        '-vf', 'scale=-2:1280',
         '-c:a', 'aac',
         '-b:a', '128k',
         '-movflags', '+faststart',
