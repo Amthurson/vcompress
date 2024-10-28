@@ -70,17 +70,24 @@ export async function compressVideo(file, onProgress, options = {}) {
       const fileName = file.name;
       await ffmpeg.writeFile(fileName, await fetchFile(file));
       
-      await ffmpeg.exec([
-        '-i', fileName,
-        '-c:v', 'libx264',
-        '-preset', compressOptions.preset,
-        '-crf', compressOptions.crf,
-        '-vf', `scale=${compressOptions.scale}`,
-        '-c:a', 'aac',
-        '-b:a', compressOptions.audioBitrate,
-        '-movflags', '+faststart',
-        'output.mp4'
-      ]);
+      const ffmpegArgs = ['-i', fileName, '-c:v', 'libx264', '-movflags', '+faststart'];
+
+      if (compressOptions.preset) {
+        ffmpegArgs.push('-preset', compressOptions.preset);
+      }
+      if (compressOptions.crf) {
+        ffmpegArgs.push('-crf', compressOptions.crf);
+      }
+      if (compressOptions.scale) {
+        ffmpegArgs.push('-vf', `scale=${compressOptions.scale}`);
+      }
+      if (compressOptions.audioBitrate) {
+        ffmpegArgs.push('-c:a', 'aac', '-b:a', compressOptions.audioBitrate);
+      }
+
+      ffmpegArgs.push('output.mp4');
+
+      await ffmpeg.exec(ffmpegArgs);
     
       const data = await ffmpeg.readFile('output.mp4');
       return new Blob([data], { type: 'video/mp4' });

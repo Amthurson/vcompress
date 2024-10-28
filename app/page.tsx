@@ -10,6 +10,7 @@ export default function Home() {
   const [compressionProgress, setCompressionProgress] = useState<number>(0);
   const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
   const [compressedImageUrl, setCompressedImageUrl] = useState<string | null>(null);
+  const [originalVideoUrl, setOriginalVideoUrl] = useState<string | null>(null); // 新增
   const [compressedVideoUrl, setCompressedVideoUrl] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'image' | 'video'>('image');
   const [error, setError] = useState<string | null>(null);
@@ -23,10 +24,10 @@ export default function Home() {
     initialQuality: 0.7,
   });
   const [videoConfig, setVideoConfig] = useState({
-    preset: 'ultrafast',
-    crf: '35',
-    scale: '-2:1280',
-    audioBitrate: '128k'
+    preset: '',
+    crf: '',
+    scale: '',
+    audioBitrate: ''
   });
 
   const presetOptions = [
@@ -37,9 +38,10 @@ export default function Home() {
     return () => {
       if (originalImageUrl) URL.revokeObjectURL(originalImageUrl);
       if (compressedImageUrl) URL.revokeObjectURL(compressedImageUrl);
+      if (originalVideoUrl) URL.revokeObjectURL(originalVideoUrl); // 新增
       if (compressedVideoUrl) URL.revokeObjectURL(compressedVideoUrl);
     };
-  }, [originalImageUrl, compressedImageUrl, compressedVideoUrl]);
+  }, [originalImageUrl, compressedImageUrl, originalVideoUrl, compressedVideoUrl]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -65,6 +67,7 @@ export default function Home() {
       setCompressedFile(null);
       setOriginalImageUrl(null);
       setCompressedImageUrl(null);
+      setOriginalVideoUrl(null); // 新增
       setCompressedVideoUrl(null);
       setError(null);
       setTimer(0);
@@ -78,6 +81,8 @@ export default function Home() {
         reader.readAsDataURL(file);
       } else if (file.type.startsWith('video/')) {
         setActiveTab('video');
+        const videoUrl = URL.createObjectURL(file); // 新增
+        setOriginalVideoUrl(videoUrl); // 新增
       }
     } else {
       setError('请选择图片或视频文件');
@@ -104,7 +109,10 @@ export default function Home() {
         const compressedUrl = URL.createObjectURL(compressed);
         setCompressedImageUrl(compressedUrl);
       } else if (selectedFile.type.startsWith('video/')) {
-        const compressed = await compressVideo(selectedFile, onProgress, videoConfig);
+        const config = Object.fromEntries(
+          Object.entries(videoConfig).filter(([_, value]) => value !== '')
+        );
+        const compressed = await compressVideo(selectedFile, onProgress, config);
         const compressedVideoUrl = URL.createObjectURL(compressed);
         setCompressedFile(new File([compressed], selectedFile.name, { type: 'video/mp4' }));
         setCompressedVideoUrl(compressedVideoUrl);
@@ -198,24 +206,25 @@ export default function Home() {
               ) : (
                 <>
                   <div className="mb-2">
-                    <label className="block">预设：</label>
+                    <label className="block">预设 (-preset)：</label>
                     <select name="preset" value={videoConfig.preset} onChange={handleVideoConfigChange} className="border rounded px-2 py-1">
+                      <option value="">不设置</option>
                       {presetOptions.map(option => (
                         <option key={option} value={option}>{option}</option>
                       ))}
                     </select>
                   </div>
                   <div className="mb-2">
-                    <label className="block">CRF：</label>
-                    <input type="text" name="crf" value={videoConfig.crf} onChange={handleVideoConfigChange} className="border rounded px-2 py-1" />
+                    <label className="block">CRF (-crf)：</label>
+                    <input type="text" name="crf" value={videoConfig.crf} onChange={handleVideoConfigChange} className="border rounded px-2 py-1" placeholder="可选" />
                   </div>
                   <div className="mb-2">
-                    <label className="block">缩放：</label>
-                    <input type="text" name="scale" value={videoConfig.scale} onChange={handleVideoConfigChange} className="border rounded px-2 py-1" />
+                    <label className="block">缩放 (-vf scale)：</label>
+                    <input type="text" name="scale" value={videoConfig.scale} onChange={handleVideoConfigChange} className="border rounded px-2 py-1" placeholder="可选" />
                   </div>
                   <div className="mb-2">
-                    <label className="block">音频比特率：</label>
-                    <input type="text" name="audioBitrate" value={videoConfig.audioBitrate} onChange={handleVideoConfigChange} className="border rounded px-2 py-1" />
+                    <label className="block">音频比特率 (-b:a)：</label>
+                    <input type="text" name="audioBitrate" value={videoConfig.audioBitrate} onChange={handleVideoConfigChange} className="border rounded px-2 py-1" placeholder="可选" />
                   </div>
                 </>
               )}
@@ -289,12 +298,20 @@ export default function Home() {
             </div>
           </div>
         )}
-        {activeTab === 'video' && compressedVideoUrl && (
-          <div className="mt-4 w-full flex justify-center">
-            <div className="flex flex-col items-center">
-              <p className="mb-2">压缩后视频</p>
-              <video src={compressedVideoUrl} controls className="max-h-[60vh] max-w-full" />
-            </div>
+        {activeTab === 'video' && (
+          <div className="mt-4 w-full flex justify-center gap-4 flex-wrap">
+            {originalVideoUrl && (
+              <div className="flex flex-col items-center">
+                <p className="mb-2">原始视频</p>
+                <video src={originalVideoUrl} controls className="max-h-[60vh] max-w-full" />
+              </div>
+            )}
+            {compressedVideoUrl && (
+              <div className="flex flex-col items-center">
+                <p className="mb-2">处理后视频</p>
+                <video src={compressedVideoUrl} controls className="max-h-[60vh] max-w-full" />
+              </div>
+            )}
           </div>
         )}
       </main>
