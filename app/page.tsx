@@ -110,7 +110,7 @@ export default function Home() {
         setCompressedImageUrl(compressedUrl);
       } else if (selectedFile.type.startsWith('video/')) {
         const config = Object.fromEntries(
-          Object.entries(videoConfig).filter(([_, value]) => value !== '')
+          Object.entries(videoConfig).filter(([__key, value]) => value !== '')
         );
         const compressed = await compressVideo(selectedFile, onProgress, config);
         const compressedVideoUrl = URL.createObjectURL(compressed);
