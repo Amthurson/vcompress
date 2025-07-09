@@ -1,5 +1,7 @@
 # Video Compress
 
+[click and use](https://jayanderson-vcompress.deno.dev/)
+
 [English](README.md) | [中文](README-zh.md)
 
 ## Project Description
