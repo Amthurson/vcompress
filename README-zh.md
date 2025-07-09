@@ -1,6 +1,6 @@
 # 视频压缩
 
-[https://jayanderson-vcompress.deno.dev/](打开使用)
+[打开使用](https://jayanderson-vcompress.deno.dev/)
 
 [English](README.md) | [中文](README-zh.md)
 
